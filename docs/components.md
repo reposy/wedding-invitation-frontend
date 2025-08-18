@@ -11,6 +11,8 @@ MAIN_COVER | GREETING | D_DAY | INTRODUCTION | GALLERY | WEDDING_INFO | MAP_TRAF
 - 모든 섹션은 `id`, `type`, `variant?`, `className?`를 수용
 - 이미지에는 `alt` 제공(접근성)
 - 섹션은 뷰포트 진입 시 순차 리빌을 기본으로 함
+- 로딩/에러: 스켈레톤(loading), 에러 상태(다시 시도 버튼 포함) 패턴을 공통 컴포넌트로 제공
+- 시간 표시: 서버 시간(UTC)을 명시적으로 로컬 타임존으로 변환하여 표시
 
 ## Props 스켈레톤(요약)
 - MAIN_COVER: `headline`, `subheadline?`, `heroImageUrl`, `ctaLabel?`, `ctaHref?`, `variant?`
@@ -28,3 +30,4 @@ MAIN_COVER | GREETING | D_DAY | INTRODUCTION | GALLERY | WEDDING_INFO | MAP_TRAF
 
 ## 접근성
 - 텍스트 대비 준수, 이미지 대체 텍스트, 키보드 포커스 가능한 컨트롤
+ - 폼 컨트롤은 레이블 연결, 에러 메시지 aria-live로 전달

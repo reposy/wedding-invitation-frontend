@@ -1,20 +1,46 @@
-# API Consumption
+# API Consumption Guide (Frontend)
 
-## Base
-- Base URL: `/api/v1`
-- 응답 래퍼: `{ success, data, error }`
+## Base URL
+- Configure `VITE_API_BASE_URL` in `.env` (e.g., http://localhost:8080)
+- All endpoints are under `/api/v1/**`
+
+## Response Envelope
+- Shape: `{ success: boolean, data: T | null, error: { code: string, message: string } | null }`
+- Always check `success` before reading `data`.
 
 ## Errors
-- `error.code` 기반 분기(예: `WEDDING_NOT_FOUND`, `SYSTEM_VALIDATION_ERROR`)
-- 네트워크/서버 오류: 재시도 제한, 사용자 메시지 표준화
+- 400: validation -> show field-level messages when available; code is `SYSTEM_VALIDATION_ERROR`
+- 422: domain -> show user-friendly messages for `GUESTBOOK_*`, `INVITATION_*`, etc.
+- 500: generic -> show fallback message; include `X-Request-Id` in user support channel
 
-## Types
-- 백엔드 DTO와 동형의 TypeScript 타입을 정의하고 공용 모듈에서 재사용
+## Request-Id
+- Read `X-Request-Id` from response headers and log it alongside errors for support.
 
-## Uploads
-- S3 presigned URL 정책(선택), 진행률/취소/재시도
+## Time and Locale
+- Server times are ISO-8601 (UTC) `OffsetDateTime`. Convert in UI as needed.
 
-## 샘플 엔드포인트
-- GET `/invitations/{invitationCode}`: 섹션 데이터/순서
-- GET `/invitations/{invitationId}/guestbook-entries` (+page/size/sort)
-- POST `/invitations/{invitationId}/guestbook-entries`
+## Guestbook Flows
+- Create: POST `/invitations/{invitationId}/guestbook` with `{ author, password, content }`
+  - Do not persist password on client; keep it in memory for just this operation
+- Reply: POST `/invitations/{invitationId}/guestbook/{id}/replies`
+- Update: PATCH `/invitations/{invitationId}/guestbook/{id}` with `{ password, content }`
+- Delete: DELETE `/invitations/{invitationId}/guestbook/{id}` with `{ password }`
+  - If thread exists, delete children first
+- List (flat): GET `/invitations/{invitationId}/guestbook`
+- List (threaded): GET `/invitations/{invitationId}/guestbook?threaded=true`
+
+## Example Fetch Wrapper (TypeScript)
+```ts
+export interface ApiResponse<T> { success: boolean; data: T | null; error: { code: string; message: string } | null }
+
+export async function api<T>(path: string, init?: RequestInit): Promise<{ data: T | null; error: string | null; requestId?: string }>{
+  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}${path}`, {
+    ...init,
+    headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
+  });
+  const requestId = res.headers.get('X-Request-Id') || undefined;
+  const body: ApiResponse<T> = await res.json();
+  if (!body.success) return { data: null, error: body.error?.message || 'Unknown error', requestId };
+  return { data: body.data as T, error: null, requestId };
+}
+```
