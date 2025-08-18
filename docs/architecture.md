@@ -1,25 +1,25 @@
 # Architecture (Frontend)
 
 ## Stack
-- React 18 + TypeScript
+- React 19 + TypeScript
 - Vite (build) + ESLint (typescript-eslint) + Prettier
 - Tailwind CSS (UI)
 - TanStack Query (server state), Zustand (UI state)
 - Framer Motion (animation), Swiper (gallery)
 - React Router (routing)
 
-## Structure (초안)
+## Structure (app/src 기준)
 ```
-frontend/
-  src/
-    app/                # 앱 셸/Provider 설정
-    pages/              # 라우트 엔트리(관리자: /admin/*)
-    features/           # 도메인 단위(예: invitations, guestbook)
-    components/         # 재사용 컴포넌트(섹션/공통)
-    hooks/              # 커스텀 훅
-    api/                # API 클라이언트/타입
-    store/              # Zustand 스토어
-    styles/             # Tailwind config, CSS entry
+frontend/app/src/
+  app/                # 앱 셸/Provider 설정 (QueryClient, Router 등)
+  pages/              # 라우트 엔트리(관리자: /admin/*)
+  features/           # 도메인 단위(예: invitations, guestbook)
+  components/         # 재사용 컴포넌트(섹션/공통)
+  hooks/              # 커스텀 훅
+  api/                # API 클라이언트/타입
+  types/              # API 래퍼/DTO 타입
+  store/              # Zustand 스토어
+  styles/             # CSS entry
 ```
 
 ## Routing
@@ -34,13 +34,13 @@ frontend/
 - 예: `VITE_API_BASE_URL=http://localhost:8080`
 
 ## API Entry
-- 단일 진입점: `src/api/client.ts`
+- 단일 진입점: `app/src/api/client.ts`
   - 표준 응답 래퍼 처리 `{ success, data, error }`
   - 응답 헤더 `X-Request-Id` 추출 및 로깅 연계
   - 모든 도메인 API는 이 유틸을 경유한다
-- 도메인 모듈: `src/api/invitations.ts`, `src/api/guestbook.ts` 등
+- 도메인 모듈: `app/src/api/invitations.ts`, `app/src/api/guestbook.ts` 등
   - 경로는 `/api/v1/**` 사용
-  - DTO 타입은 `src/types/api.ts`에서 공통 정의
+  - DTO 타입은 `app/src/types/api.ts`에서 공통 정의
 
 ## Structure Details
 ```

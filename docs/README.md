@@ -13,3 +13,23 @@
 - accessibility-performance.md: 접근성/성능 체크리스트
 
 관리자(Admin) UI는 React SPA(`/admin`)로 가정합니다. 공개(청첩장) 뷰도 React 구성 시 동일 규칙을 따릅니다.
+
+## Quick Start
+1) 환경변수
+```
+frontend/app/.env
+VITE_API_BASE_URL=http://localhost:8080
+```
+2) 의존성 설치/실행
+```
+cd frontend/app
+npm i
+npm run dev
+```
+3) 빌드/린트
+```
+npm run build
+npm run lint
+```
+
+Root: `frontend/app/src`
