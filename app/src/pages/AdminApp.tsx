@@ -1,10 +1,13 @@
 import { Link, useRoutes } from 'react-router-dom'
 import type { RouteObject } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
-import { createWedding } from '../api/weddings'
+import { Select } from '../components/ui/Select'
+import { createWedding, listWeddings } from '../api/weddings'
 import { createInvitation } from '../api/invitations'
+import type { Wedding } from '../types/api'
 
 function AdminHome() {
 	return (
@@ -55,7 +58,24 @@ function CreateWedding() {
 }
 
 function CreateInvitation() {
-	const { register, handleSubmit, formState } = useForm<CreateInvitationForm>({ defaultValues: { weddingId: undefined as any, invitationCode: '' } })
+	const { register, handleSubmit, formState, setValue } = useForm<CreateInvitationForm>({ defaultValues: { weddingId: undefined as any, invitationCode: '' } })
+	const [weddings, setWeddings] = useState<Wedding[] | null>(null)
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
+
+	useEffect(() => {
+		let mounted = true
+		;(async () => {
+			setLoading(true)
+			const { data, error } = await listWeddings(0, 50)
+			if (!mounted) return
+			if (error) setError(error)
+			setWeddings(data?.items || [])
+			setLoading(false)
+		})()
+		return () => { mounted = false }
+	}, [])
+
 	const onSubmit = async (values: CreateInvitationForm) => {
 		try {
 			const { data, error, requestId } = await createInvitation(values)
@@ -70,11 +90,22 @@ function CreateInvitation() {
 	return (
 		<div className="p-6">
 			<h2 className="text-xl font-semibold">초대장 생성</h2>
-			<p className="mt-2 text-sm opacity-80">웨딩 ID를 입력하고 초대장 코드를 지정하세요. (목록 API는 추후 추가 예정)</p>
+			<p className="mt-2 text-sm opacity-80">웨딩을 선택하고 초대장 코드를 지정하세요.</p>
 			<form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
 				<div>
-					<label htmlFor="weddingId" className="block text-sm font-medium mb-1">웨딩 ID</label>
-					<Input id="weddingId" type="number" placeholder="예: 1" {...register('weddingId', { required: true, valueAsNumber: true })} />
+					<label htmlFor="weddingId" className="block text-sm font-medium mb-1">웨딩</label>
+					{loading ? (
+						<p className="text-sm opacity-80">로딩 중…</p>
+					) : error ? (
+						<p className="text-sm text-red-600">목록을 불러오지 못했습니다: {error}</p>
+					) : (
+						<Select id="weddingId" defaultValue="" onChange={(e) => setValue('weddingId', Number(e.target.value), { shouldValidate: true })}>
+							<option value="" disabled>웨딩을 선택하세요</option>
+							{(weddings || []).map(w => (
+								<option key={w.id} value={w.id}>{w.title} ({w.code})</option>
+							))}
+						</Select>
+					)}
 				</div>
 				<div>
 					<label htmlFor="invitationCode" className="block text-sm font-medium mb-1">초대장 코드</label>
