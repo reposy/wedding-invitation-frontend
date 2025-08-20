@@ -13,4 +13,8 @@ export async function createWedding(input: { code: string; title: string }) {
 	})
 }
 
+export async function getWeddingById(id: number) {
+	return api<Wedding>(`/api/v1/weddings/${id}`)
+}
+
 
