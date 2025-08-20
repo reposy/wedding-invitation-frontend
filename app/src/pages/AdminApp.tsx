@@ -19,6 +19,8 @@ function AdminHome() {
 
 type CreateWeddingForm = { code: string; title: string }
 
+type CreateInvitationForm = { weddingId: number; invitationCode: string }
+
 function CreateWedding() {
 	const { register, handleSubmit, formState } = useForm<CreateWeddingForm>({ defaultValues: { code: '', title: '' } })
 	const onSubmit = async (values: CreateWeddingForm) => {
@@ -60,11 +62,42 @@ function CreateWedding() {
 }
 
 function CreateInvitation() {
+	const { register, handleSubmit, formState } = useForm<CreateInvitationForm>({ defaultValues: { weddingId: undefined as any, invitationCode: '' } })
+	const onSubmit = async (values: CreateInvitationForm) => {
+		try {
+			const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/invitations`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(values),
+			})
+			const requestId = res.headers.get('X-Request-Id') || undefined
+			const body = await res.json()
+			if (!body?.success) {
+				alert(`생성 실패: ${body?.error?.message || 'Unknown error'}\nRequest-Id: ${requestId || '-'} `)
+				return
+			}
+			const code = body.data?.invitationCode || values.invitationCode
+			alert(`생성 성공! id=${body.data?.id || ''} / code=${code} / 링크=/i/${code} / Request-Id=${requestId || '-'} `)
+		} catch (e: any) {
+			alert(`요청 실패: ${e?.message || e}`)
+		}
+	}
+
 	return (
 		<div className="p-6">
 			<h2 className="text-xl font-semibold">초대장 생성</h2>
-			<p className="mt-2 text-sm opacity-80">테마/템플릿을 선택하세요.</p>
-			{/* TODO: 폼 구현 */}
+			<p className="mt-2 text-sm opacity-80">웨딩 ID를 입력하고 초대장 코드를 지정하세요. (목록 API는 추후 추가 예정)</p>
+			<form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+				<div>
+					<label htmlFor="weddingId" className="block text-sm font-medium mb-1">웨딩 ID</label>
+					<Input id="weddingId" type="number" placeholder="예: 1" {...register('weddingId', { required: true, valueAsNumber: true })} />
+				</div>
+				<div>
+					<label htmlFor="invitationCode" className="block text-sm font-medium mb-1">초대장 코드</label>
+					<Input id="invitationCode" placeholder="예: WDG-2025-JJ" {...register('invitationCode', { required: true })} />
+				</div>
+				<Button type="submit" loading={formState.isSubmitting}>생성</Button>
+			</form>
 		</div>
 	)
 }
