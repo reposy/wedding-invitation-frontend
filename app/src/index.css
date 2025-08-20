@@ -2,6 +2,9 @@
 
 :root {
   color-scheme: light dark;
+  --theme-primary: #ff69b4; /* romantic */
+  --theme-bg: #ffffff;
+  --theme-text: #111827;
 }
 
 html, body, #root {
@@ -10,4 +13,16 @@ html, body, #root {
 
 body {
   margin: 0;
+  font-family: "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+[data-theme="romantic"] {
+  --theme-primary: #ff69b4;
+  --theme-bg: #fff7fb;
+}
+
+[data-theme="elderly"] {
+  --theme-primary: #000000;
+  --theme-bg: #ffffff;
+  --theme-text: #000000;
 }
