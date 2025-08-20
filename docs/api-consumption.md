@@ -1,35 +1,35 @@
-# API Consumption Guide (Frontend)
+# API 소비 가이드 (Frontend)
 
-## Base URL
-- Configure `VITE_API_BASE_URL` in `.env` (e.g., http://localhost:8080)
-- All endpoints are under `/api/v1/**`
+## 기본 URL
+- `.env`의 `VITE_API_BASE_URL`을 설정합니다(예: http://localhost:8080).
+- 모든 엔드포인트는 `/api/v1/**` 하위에 위치합니다.
 
-## Response Envelope
-- Shape: `{ success: boolean, data: T | null, error: { code: string, message: string } | null }`
-- Always check `success` before reading `data`.
+## 표준 응답 래퍼
+- 형태: `{ success: boolean, data: T | null, error: { code: string, message: string } | null }`
+- `data`를 읽기 전에 항상 `success`를 확인합니다.
 
-## Errors
-- 400: validation -> show field-level messages when available; code is `SYSTEM_VALIDATION_ERROR`
-- 422: domain -> show user-friendly messages for `GUESTBOOK_*`, `INVITATION_*`, etc.
-- 500: generic -> show fallback message; include `X-Request-Id` in user support channel
+## 오류 처리
+- 400: 검증 오류 → 필드별 메시지가 있으면 표시; 에러 코드는 `SYSTEM_VALIDATION_ERROR`
+- 422: 도메인 오류 → `GUESTBOOK_*`, `INVITATION_*` 등 사용자 친화 메시지 매핑
+- 500: 일반 오류 → 폴백 메시지 표시; 사용자 지원 시 `X-Request-Id` 포함
 
 ## Request-Id
-- Read `X-Request-Id` from response headers and log it alongside errors for support.
+- 응답 헤더의 `X-Request-Id`를 읽어 오류 로그와 함께 기록합니다(지원/추적용).
 
-## Time and Locale
-- Server times are ISO-8601 (UTC) `OffsetDateTime`. Convert in UI as needed.
+## 시간/로케일
+- 서버 시간은 ISO-8601(UTC) `OffsetDateTime`입니다. UI에서 명시적으로 변환/표시합니다.
 
-## Guestbook Flows
-- Create: POST `/invitations/{invitationId}/guestbook` with `{ author, password, content }`
-  - Do not persist password on client; keep it in memory for just this operation
-- Reply: POST `/invitations/{invitationId}/guestbook/{id}/replies`
-- Update: PATCH `/invitations/{invitationId}/guestbook/{id}` with `{ password, content }`
-- Delete: DELETE `/invitations/{invitationId}/guestbook/{id}` with `{ password }`
-  - If thread exists, delete children first
-- List (flat): GET `/invitations/{invitationId}/guestbook`
-- List (threaded): GET `/invitations/{invitationId}/guestbook?threaded=true`
+## 방명록 플로우
+- 생성: POST `/invitations/{invitationId}/guestbook` with `{ author, password, content }`
+  - 비밀번호는 클라이언트에 저장하지 않습니다. 이 동작에 한해 메모리에만 유지합니다.
+- 답글: POST `/invitations/{invitationId}/guestbook/{id}/replies`
+- 수정: PATCH `/invitations/{invitationId}/guestbook/{id}` with `{ password, content }`
+- 삭제: DELETE `/invitations/{invitationId}/guestbook/{id}` with `{ password }`
+  - 쓰레드가 있으면 자식부터 삭제해야 합니다.
+- 목록(플랫): GET `/invitations/{invitationId}/guestbook`
+- 목록(쓰레드): GET `/invitations/{invitationId}/guestbook?threaded=true`
 
-## Example Fetch Wrapper (TypeScript)
+## 예시 Fetch 래퍼 (TypeScript)
 ```ts
 export interface ApiResponse<T> { success: boolean; data: T | null; error: { code: string; message: string } | null }
 

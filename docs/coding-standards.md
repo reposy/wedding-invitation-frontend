@@ -1,32 +1,32 @@
-# Coding Standards (Frontend)
+# 코딩 규칙 (Frontend)
 
-## Naming & Files
-- Components: PascalCase, hooks: `useXxx`, modules/utils: kebab-case files
-- One component per file; co-locate styles and tests when practical
+## 네이밍 & 파일
+- 컴포넌트: PascalCase, 훅: `useXxx`, 모듈/유틸: kebab-case 파일
+- 파일당 한 컴포넌트 원칙; 스타일/테스트는 가능하면 인접 배치
 
-## Types & Safety
-- Prefer explicit types for public APIs and component props
-- Avoid `any`; use discriminated unions for variants
+## 타입 & 안정성
+- 공개 API/컴포넌트 props에는 명시적 타입을 선호
+- `any` 지양; 변형(variant)에는 판별 가능한 유니온 사용
 
-## Control Flow
-- Use early returns to reduce nesting
-- Handle errors explicitly; never swallow exceptions
+## 제어 흐름
+- early return으로 중첩을 줄입니다
+- 오류는 명시적으로 처리하고, 예외를 삼키지 않습니다
 
-## Comments
-- Explain "why" when logic is non-obvious; avoid trivial comments
+## 주석
+- 비자명한 로직에는 "왜"를 설명하고, 사소한 주석은 피합니다
 
-## Formatting
-- ESLint + Prettier; avoid unrelated reformatting in edits
+## 포매팅
+- ESLint + Prettier 사용; 관련 없는 재포매팅 금지
 
-## Performance
-- Memoize expensive calculations; avoid inline object/array props in lists
-- Prefer data fetching compatible with Suspense (React Query)
+## 성능
+- 비용 큰 계산은 메모이즈; 리스트에 인라인 객체/배열 props 지양
+- Suspense 호환 데이터 패칭(React Query) 선호
 
-## Accessibility
-- Semantic HTML and landmark roles where appropriate
-- Keyboard-accessible controls; visible focus
-- Color contrast compliant; alt text for images
+## 접근성
+- 의미론적 HTML과 적절한 landmark role 사용
+- 키보드 접근 가능한 컨트롤, 명확한 포커스 표시
+- 색상 대비 준수, 이미지 대체 텍스트 제공
 
-## Testing
-- Vitest + RTL; avoid brittle snapshots
-- Test critical flows: API error mapping, loading states, accessibility roles
+## 테스트
+- Vitest + RTL 사용; 깨지기 쉬운 스냅샷 지양
+- 핵심 흐름 테스트: API 오류 매핑, 로딩 상태, 접근성 롤
