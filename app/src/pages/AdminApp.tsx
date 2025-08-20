@@ -8,6 +8,7 @@ import { Select } from '../components/ui/Select'
 import { createWedding, listWeddings } from '../api/weddings'
 import { createInvitation } from '../api/invitations'
 import type { Wedding } from '../types/api'
+import { useToast } from '../app/ToastProvider'
 
 function AdminHome() {
 	return (
@@ -28,13 +29,14 @@ type CreateInvitationForm = { weddingId: number; invitationCode: string }
 
 function CreateWedding() {
 	const { register, handleSubmit, formState } = useForm<CreateWeddingForm>({ defaultValues: { code: '', title: '' } })
+	const { show } = useToast()
 	const onSubmit = async (values: CreateWeddingForm) => {
 		try {
 			const { data, error, requestId } = await createWedding(values)
-			if (error) return alert(`생성 실패: ${error}\nRequest-Id: ${requestId || '-'}`)
-			alert(`생성 성공! id=${data?.id || ''} / Request-Id=${requestId || '-'}`)
+			if (error) return show(`생성 실패: ${error} (req: ${requestId || '-'})`, { type: 'error' })
+			show(`생성 성공! id=${data?.id || ''}`)
 		} catch (e: any) {
-			alert(`요청 실패: ${e?.message || e}`)
+			show(`요청 실패: ${e?.message || e}`, { type: 'error' })
 		}
 	}
 
@@ -62,6 +64,7 @@ function CreateInvitation() {
 	const [weddings, setWeddings] = useState<Wedding[] | null>(null)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const { show } = useToast()
 
 	useEffect(() => {
 		let mounted = true
@@ -79,11 +82,11 @@ function CreateInvitation() {
 	const onSubmit = async (values: CreateInvitationForm) => {
 		try {
 			const { data, error, requestId } = await createInvitation(values)
-			if (error) return alert(`생성 실패: ${error}\nRequest-Id: ${requestId || '-'}`)
+			if (error) return show(`생성 실패: ${error} (req: ${requestId || '-'})`, { type: 'error' })
 			const code = data?.invitationCode || values.invitationCode
-			alert(`생성 성공! id=${data?.id || ''} / code=${code} / 링크=/i/${code} / Request-Id=${requestId || '-'}`)
+			show(`생성 성공! code=${code}`)
 		} catch (e: any) {
-			alert(`요청 실패: ${e?.message || e}`)
+			show(`요청 실패: ${e?.message || e}`, { type: 'error' })
 		}
 	}
 
