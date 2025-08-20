@@ -3,6 +3,8 @@ import type { RouteObject } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
+import { createWedding } from '../api/weddings'
+import { createInvitation } from '../api/invitations'
 
 function AdminHome() {
 	return (
@@ -25,18 +27,9 @@ function CreateWedding() {
 	const { register, handleSubmit, formState } = useForm<CreateWeddingForm>({ defaultValues: { code: '', title: '' } })
 	const onSubmit = async (values: CreateWeddingForm) => {
 		try {
-			const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/weddings`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(values),
-			})
-			const requestId = res.headers.get('X-Request-Id') || undefined
-			const body = await res.json()
-			if (!body?.success) {
-				alert(`생성 실패: ${body?.error?.message || 'Unknown error'}\nRequest-Id: ${requestId || '-'} `)
-				return
-			}
-			alert(`생성 성공! id=${body.data?.id || ''} / Request-Id=${requestId || '-'} `)
+			const { data, error, requestId } = await createWedding(values)
+			if (error) return alert(`생성 실패: ${error}\nRequest-Id: ${requestId || '-'}`)
+			alert(`생성 성공! id=${data?.id || ''} / Request-Id=${requestId || '-'}`)
 		} catch (e: any) {
 			alert(`요청 실패: ${e?.message || e}`)
 		}
@@ -65,19 +58,10 @@ function CreateInvitation() {
 	const { register, handleSubmit, formState } = useForm<CreateInvitationForm>({ defaultValues: { weddingId: undefined as any, invitationCode: '' } })
 	const onSubmit = async (values: CreateInvitationForm) => {
 		try {
-			const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/invitations`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(values),
-			})
-			const requestId = res.headers.get('X-Request-Id') || undefined
-			const body = await res.json()
-			if (!body?.success) {
-				alert(`생성 실패: ${body?.error?.message || 'Unknown error'}\nRequest-Id: ${requestId || '-'} `)
-				return
-			}
-			const code = body.data?.invitationCode || values.invitationCode
-			alert(`생성 성공! id=${body.data?.id || ''} / code=${code} / 링크=/i/${code} / Request-Id=${requestId || '-'} `)
+			const { data, error, requestId } = await createInvitation(values)
+			if (error) return alert(`생성 실패: ${error}\nRequest-Id: ${requestId || '-'}`)
+			const code = data?.invitationCode || values.invitationCode
+			alert(`생성 성공! id=${data?.id || ''} / code=${code} / 링크=/i/${code} / Request-Id=${requestId || '-'}`)
 		} catch (e: any) {
 			alert(`요청 실패: ${e?.message || e}`)
 		}
