@@ -1,4 +1,8 @@
-import { Link, Outlet, RouteObject, useRoutes } from 'react-router-dom'
+import { Link, useRoutes } from 'react-router-dom'
+import type { RouteObject } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { Input } from '../components/ui/Input'
+import { Button } from '../components/ui/Button'
 
 function AdminHome() {
 	return (
@@ -13,12 +17,44 @@ function AdminHome() {
 	)
 }
 
+type CreateWeddingForm = { code: string; title: string }
+
 function CreateWedding() {
+	const { register, handleSubmit, formState } = useForm<CreateWeddingForm>({ defaultValues: { code: '', title: '' } })
+	const onSubmit = async (values: CreateWeddingForm) => {
+		try {
+			const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/weddings`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(values),
+			})
+			const requestId = res.headers.get('X-Request-Id') || undefined
+			const body = await res.json()
+			if (!body?.success) {
+				alert(`생성 실패: ${body?.error?.message || 'Unknown error'}\nRequest-Id: ${requestId || '-'} `)
+				return
+			}
+			alert(`생성 성공! id=${body.data?.id || ''} / Request-Id=${requestId || '-'} `)
+		} catch (e: any) {
+			alert(`요청 실패: ${e?.message || e}`)
+		}
+	}
+
 	return (
 		<div className="p-6">
 			<h2 className="text-xl font-semibold">결혼식 생성</h2>
 			<p className="mt-2 text-sm opacity-80">다음 단계에서 초대장을 연결합니다.</p>
-			{/* TODO: 폼 구현 */}
+			<form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+				<div>
+					<label htmlFor="code" className="block text-sm font-medium mb-1">코드</label>
+					<Input id="code" placeholder="예: WD-20250818-001" {...register('code', { required: true })} />
+				</div>
+				<div>
+					<label htmlFor="title" className="block text-sm font-medium mb-1">제목</label>
+					<Input id="title" placeholder="예: John & Jane Wedding" {...register('title', { required: true })} />
+				</div>
+				<Button type="submit" loading={formState.isSubmitting}>생성</Button>
+			</form>
 		</div>
 	)
 }

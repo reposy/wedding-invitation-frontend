@@ -9,6 +9,7 @@ ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
 COPY package*.json ./
 COPY vite.config.ts tsconfig*.json eslint.config.js ./
+COPY index.html ./
 COPY public ./public
 COPY src ./src
 
