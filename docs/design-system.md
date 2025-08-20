@@ -1,53 +1,28 @@
-# Design System
+# 디자인 시스템 (프론트엔드)
 
-목표: 모바일 청첩장 UI를 위한 최소 토큰과 규칙만 정의합니다. 상세 샘플/구현 코드는 각 컴포넌트/스타일 파일에서 관리합니다.
+## 개요
+모바일 퍼스트 청첩장 UI를 위한 디자인 시스템입니다. 로맨틱 테마를 1순위로 지원하며, 컴포넌트 템플릿을 재사용/조합할 수 있습니다. 초대장 생성(관리자) 단계에서 테마와 템플릿을 선택/조합합니다.
 
----
+## 테마
+- **로맨틱(기본)**: 부드러운 파스텔, 고급스러운 타이포그래피, 은은한 애니메이션(예: 글자 리빌, 스크롤 트랜지션)
+- **고령자 친화**: 높은 대비, 큰 글씨, 화면당 컨텐츠 최소화, 애니메이션 축소
+- **템플릿**: `variant` 속성으로 테마 전환(`'romantic' | 'elderly'`). 관리자에서 섹션별 템플릿 조합 가능
 
-## Tokens (minimum)
-- Colors: primary, neutral, semantic
-- Typography: family, size scale, line-height, weight
-- Spacing: small set
-- Radius/Shadow: small set
+## 색상
+- 기본: #FF69B4 (로맨틱 포인트)
+- 보조: #FFDAB9 (배경)
+- 본문: #333333 (가독성)
+- 고대비(고령자): #000000 on #FFFFFF
 
-```css
-:root {
-  /* colors */
-  --color-primary-500: #eab308;
-  --color-neutral-900: #171717;
-  --color-success: #22c55e;
-  --color-error: #ef4444;
+## 타이포그래피
+- 헤딩: 'Playfair Display'(세리프), 기본 2rem+ (고령자 2.5rem+)
+- 본문: 'Open Sans'(산세리프), 기본 1rem (고령자 1.5rem+)
+- 줄간: 1.5 권장
 
-  /* typography */
-  --font-family-primary: "Pretendard Variable", system-ui, sans-serif;
-  --text-3xl: 1.875rem; /* h2 */
-  --text-base: 1rem;
-  --text-sm: 0.875rem;
-  --leading-tight: 1.25;
-  --leading-normal: 1.5;
-  --font-medium: 500;
-  --font-bold: 700;
+## 아이콘/이미지
+- 아이콘: 라인 아이콘 중심, 로맨틱은 플로럴 모티프 사용 가능
+- 이미지: 반응형 + alt 제공, 성능을 위해 지연 로딩 사용
 
-  /* spacing */
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-
-  /* radius/shadow */
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-```
-
-## Usage rules
-- Headline: `--text-3xl + --font-bold + --leading-tight`
-- Body: `--text-base + --leading-normal`
-- Section spacing: `--space-8` between sections
-- Touch targets: min 44px; inputs/buttons ≥ 44px
-- Accessibility: text contrast ≥ 4.5:1 (3:1 for large text); focus visible outline
-- Dark mode: respect `prefers-color-scheme: dark` with color variable overrides
-
-## Notes
-- 상세/확장 토큰은 테마별 파일에서 정의합니다.
-- 샘플 CSS/컴포넌트 코드는 문서에 포함하지 않습니다.
+## 컴포넌트 템플릿
+- 모든 컴포넌트는 props 기반 템플릿/슬롯/variant를 수용
+- 관리자 UI에서 섹션별 템플릿을 선택하여 혼합 구성 가능 (예: 로맨틱 헤더 + 단순 본문)

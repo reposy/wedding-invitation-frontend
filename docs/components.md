@@ -28,6 +28,11 @@ MAIN_COVER | GREETING | D_DAY | INTRODUCTION | GALLERY | WEDDING_INFO | MAP_TRAF
 ## 변형(Variants)
 - 색/타이포/레이아웃 조합을 `variant` 문자열로 식별(`default`, `minimal`, `photo-centric` 등)
 
+## 템플릿화와 재사용성
+- 모든 컴포넌트는 템플릿화되며, 테마 간 재사용을 위해 `templateId` 또는 `variant` props를 사용합니다.
+- 관리자는 템플릿을 선택하고 순서를 배치하여 초대장을 구성합니다.
+- 예시: <MainCover variant="romantic" template="fade-in-text" />
+
 ## 접근성
 - 텍스트 대비 준수, 이미지 대체 텍스트, 키보드 포커스 가능한 컨트롤
  - 폼 컨트롤은 레이블 연결, 에러 메시지 aria-live로 전달
